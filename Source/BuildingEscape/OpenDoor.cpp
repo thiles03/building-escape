@@ -1,3 +1,5 @@
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
 #include "OpenDoor.h"
 #include "GameFramework/Actor.h"
 
@@ -13,7 +15,9 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 
 	StartYaw = GetOwner()->GetActorRotation().Yaw;
-	TargetYaw += StartYaw;
+	OpenAngle += StartYaw;
+
+	OpeningActor = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 // Called every frame
@@ -21,16 +25,30 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (PressurePlate->IsOverlappingActor(OpeningActor))
+	if (PressurePlate && PressurePlate->IsOverlappingActor(OpeningActor))
 	{
 		OpenDoor(DeltaTime);
+		DoorLastOpened = GetWorld()->GetTimeSeconds();
+	}
+	else
+	{
+		if ((GetWorld()->GetTimeSeconds() - DoorLastOpened) > DoorCloseDelay)
+		{
+			CloseDoor(DeltaTime);
+		}
 	}
 }
 void UOpenDoor::OpenDoor(float DeltaTime)
 {
 	FRotator CurrentRotation = GetOwner()->GetActorRotation();
-	CurrentRotation.Yaw = FMath::FInterpTo(CurrentRotation.Yaw, TargetYaw, DeltaTime, 2);
+	CurrentRotation.Yaw = FMath::FInterpTo(CurrentRotation.Yaw, OpenAngle, DeltaTime, OpenSpeed);
 	GetOwner()->SetActorRotation(CurrentRotation);
 }
 
+void UOpenDoor::CloseDoor(float DeltaTime)
+{
+	FRotator CurrentRotation = GetOwner()->GetActorRotation();
+	CurrentRotation.Yaw = FMath::FInterpTo(CurrentRotation.Yaw, StartYaw, DeltaTime, CloseSpeed);
+	GetOwner()->SetActorRotation(CurrentRotation);
+}
 //	UE_LOG(LogTemp, Warning, TEXT("Current rotation: %s"), *CurrrentRotation.ToString());
