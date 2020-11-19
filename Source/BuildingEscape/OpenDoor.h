@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -17,8 +18,17 @@ protected:
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+	void OpenDoor(float DeltaTime);
 
 private:
-	float TargetYaw;
 	float StartYaw;
+
+	UPROPERTY(EditAnywhere)
+	float TargetYaw = -90.f;
+
+	UPROPERTY(EditAnywhere)
+	ATriggerVolume *PressurePlate;
+
+	UPROPERTY(EditAnywhere)
+	AActor *OpeningActor;
 };
