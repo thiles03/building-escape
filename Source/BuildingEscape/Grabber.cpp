@@ -72,6 +72,17 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 
 	FVector LineTraceEnd = PlayerViewpointLocation + FVector(PlayerViewpointRotation.Vector() * Reach);
 
+	DrawDebugLine(
+		GetWorld(),
+		PlayerViewpointLocation,
+		LineTraceEnd,
+		FColor(0, 255 , 0),
+		false,
+		0.f,
+		0,
+		5.f
+	);
+
 	FHitResult Hit;
 
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
