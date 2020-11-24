@@ -8,15 +8,50 @@
 UGrabber::UGrabber()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FindPhysicsHandle();
+	SetupInputComponent();
+}
+
+void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+
+void UGrabber::Grab()
+{
+	UE_LOG(LogTemp, Warning, TEXT("grab"));
+	GetFirstPhysicsBodyInReach();
+	// If hit something, attach physics handle
+}
+
+void UGrabber::Drop()
+{
+	UE_LOG(LogTemp, Warning, TEXT("drop"));
+	// Remove physics handle
+}
+
+void UGrabber::FindPhysicsHandle()
+{
+	// Check for physics handle component
 	PhysHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysHandle)
+	{
+		// Handle found
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("No physics handle on %s!"), *GetOwner()->GetName());
+	}
+}
+
+void UGrabber::SetupInputComponent()
+{
 	Input = GetOwner()->FindComponentByClass<UInputComponent>();
 	if (Input)
 	{
@@ -25,10 +60,8 @@ void UGrabber::BeginPlay()
 	}
 }
 
-void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	FVector PlayerViewpointLocation;
 	FRotator PlayerViewpointRotation;
 
@@ -39,19 +72,10 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	FVector LineTraceEnd = PlayerViewpointLocation + FVector(PlayerViewpointRotation.Vector() * Reach);
 
-	DrawDebugLine(
-		GetWorld(),
-		PlayerViewpointLocation,
-		LineTraceEnd,
-		FColor(255, 0, 0),
-		false,
-		0.f,
-		0,
-		5
-	);
-
 	FHitResult Hit;
+
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+	
 	GetWorld()->LineTraceSingleByObjectType(
 		OUT Hit,
 		PlayerViewpointLocation,
@@ -66,14 +90,6 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *ActorHit->GetName());
 	}
-}
 
-void UGrabber::Grab()
-{
-	UE_LOG(LogTemp, Warning, TEXT("grab"));
-}
-
-void UGrabber::Drop()
-{
-	UE_LOG(LogTemp, Warning, TEXT("drop"));
+	return Hit;
 }

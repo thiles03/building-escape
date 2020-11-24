@@ -12,12 +12,10 @@ class BUILDINGESCAPE_API UGrabber : public UActorComponent
 
 public:
 	UGrabber();
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
 protected:
 	virtual void BeginPlay() override;
-
-public:
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -28,4 +26,7 @@ private:
 
 	void Grab();
 	void Drop();
+	void FindPhysicsHandle();
+	void SetupInputComponent();
+	FHitResult GetFirstPhysicsBodyInReach() const;
 };
