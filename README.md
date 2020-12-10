@@ -1,7 +1,7 @@
-# Third Person Survival
+# Building Escape
 
 ### General Info
-Marble run game built in UE4.
+Building escape game built in UE4. Resources and learning from Gamedev.tv.
 
 ### Technologies
 Created with:
